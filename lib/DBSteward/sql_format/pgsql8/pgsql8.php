@@ -261,7 +261,7 @@ class pgsql8 extends sql99 {
       }
       $value_type = pgsql8_column::column_type(dbsteward::$new_database, $node_schema, $node_table, $node_column, $foreign);
 
-      $value = pgsql8::value_escape($value_type, dbsteward::string_cast($node_col));
+      $value = pgsql8::value_escape($value_type, dbsteward::string_cast($node_col), dbsteward::$new_database);
     }
     return $value;
   }
