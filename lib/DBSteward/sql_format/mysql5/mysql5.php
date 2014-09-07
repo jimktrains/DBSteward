@@ -767,7 +767,7 @@ class mysql5 extends sql99 {
       $column_default_value = xml_parser::column_default_value($node_table, $data_column_name, $dummy_data_column);
       if ($column_default_value != NULL) {
         // run default value through value_escape to allow data value conversions to happen
-        $value = mysql5::value_escape($value_type, $column_default_value);
+        $value = mysql5::value_escape($value_type, $column_default_value, dbsteward::$new_database);
       }
       // else put a NULL in the values list
       else {
@@ -775,7 +775,7 @@ class mysql5 extends sql99 {
       }
     }
     else {
-      $value = mysql5::value_escape($value_type, dbsteward::string_cast($node_col));
+      $value = mysql5::value_escape($value_type, dbsteward::string_cast($node_col), dbsteward::$new_database);
     }
     
     return $value;
@@ -808,7 +808,7 @@ class mysql5 extends sql99 {
       if (strlen($enum_regex) > 0) {
         $enum_regex = '|' . $enum_regex;
       }
-      $PATTERN_QUOTED_TYPES = "/^char.*|^string|^date.*|^time.*|^varchar.*|^interval|^money.*|^inet" . $enum_regex . "/i";
+      $PATTERN_QUOTED_TYPES = "/^enum.*|^char.*|^string|^date.*|^time.*|^varchar.*|^interval|^money.*|^inet" . $enum_regex . "/i";
 
       // strip quoting if it is a quoted type, it will be added after conditional conversion
       if (preg_match($PATTERN_QUOTED_TYPES, $type) > 0) {
