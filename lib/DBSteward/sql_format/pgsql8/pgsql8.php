@@ -222,21 +222,8 @@ class pgsql8 extends sql99 {
    * @return string
    */
   public static function column_value_default($node_schema, $node_table, $data_column_name, $node_col) {
-    // if marked, make it null or default, depending on column options
-    if (isset($node_col['null']) && strcasecmp('true', $node_col['null']) == 0) {
-      $value = 'NULL';
-    }
-    // columns that specify empty attribute are made empty strings
-    else if (isset($node_col['empty']) && strcasecmp('true', $node_col['empty']) == 0) {
-      if (pgsql8::E_ESCAPE) {
-        $value = "E''";
-      }
-      else {
-        $value = "''";
-      }
-    }
-    // don't esacape columns marked literal sql values
-    else if (isset($node_col['sql']) && strcasecmp($node_col['sql'], 'true') == 0) {
+
+    if (isset($node_col['sql']) && strcasecmp($node_col['sql'], 'true') == 0) {
       $value = '(' . $node_col . ')';
     }
     // else if col is zero length, make it default, or DB NULL
@@ -263,6 +250,22 @@ class pgsql8 extends sql99 {
 
       $value = pgsql8::value_escape($value_type, dbsteward::string_cast($node_col));
     }
+
+    // if marked, make it null or default, depending on column options
+    if ( (is_null($value) || strcasecmp('null', $value))
+       && (isset($node_col['null']) && strcasecmp('false', $node_col['null']) == 0)) {
+      throw new exception("NULL data for non-null " . $node_table['name'] . " column " . $data_column_name );
+    }
+    // columns that specify empty attribute are made empty strings
+    else if (empty($value) && (isset($node_col['empty']) && strcasecmp('true', $node_col['empty']) == 0) ) {
+      if (pgsql8::E_ESCAPE) {
+        $value = "E''";
+      }
+      else {
+        $value = "''";
+      }
+    }
+    // don't esacape columns marked literal sql values
     return $value;
   }
 
